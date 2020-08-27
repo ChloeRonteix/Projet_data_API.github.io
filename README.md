@@ -1,6 +1,8 @@
 # PROJET
 Personnaliser la restitution de la donnée scrapée
 
+![alt text](https://github.com/ChloeRonteix/Projet_data_API.github.io/blob/master/schema_système.png?raw=true)
+
 # Equipe
 - Thibault Valton
 - Chloé Ronteix
