@@ -1,0 +1,10 @@
+Base de données: PostgreSQL hébergée chez AWS
+Client DB: pgAdmin
+
+Python:
+    - Requests : https://fr.python-requests.org/en/latest/
+    - BeautifulSoup : https://www.crummy.com/software/BeautifulSoup/bs4/doc/
+    - Pandas : https://pandas.pydata.org/pandas-docs/stable/user_guide/index.html#user-guide
+    - Psycopg :
+                - Tuto: https://www.postgresqltutorial.com/postgresql-python/
+                - Installation: https://www.psycopg.org/docs/install.html
