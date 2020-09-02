@@ -17,6 +17,7 @@ def create_table():
 def insert_data():
     c.execute("INSERT INTO *** (columns) VALUES (?, ?);", data)
     conn.commit()
+    
 
 def select_all():
     pass
