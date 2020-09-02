@@ -4,17 +4,19 @@ import psycopg2
 conn = psycopg2.connect(dbname="postgres", user="common", password="allocine", host="allocine.cnlsqrwefkra.eu-west-1.rds.amazonaws.com")
 
 #cursor
-curs=conn.cursor()
+c=conn.cursor()
 
 #Query test1
-curs.execute('SELECT * FROM test1;')
-print(curs.fetchall())
+c.execute('SELECT * FROM test1;')
+print(c.fetchall())
 
 def create_table():
-    pass
+    c.execute('''CREATE TABLE IF NOT EXISTS *** (columns TYPE)''')
+    conn.commit()
 
 def insert_data():
-    pass
+    c.execute("INSERT INTO *** (columns) VALUES (?, ?);", data)
+    conn.commit()
 
 def select_all():
     pass
