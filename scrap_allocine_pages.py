@@ -2,27 +2,44 @@ import requests
 import bs4
 import time
 import pandas as pd
+from film_infos import FilmInfo
 
-url = 'http://www.allocine.fr/films/?page='
+base_url = 'http://www.allocine.fr/films/?page='
 
-def get_pages(url, nb):
-    pages = []
-    for i in range(1,nb+1):
-        j = url + str(i)
-        pages.append(j)
-    return pages
-    
-pages = get_pages(url,2)
+scrap = start_scrap()
 
-df2 = pd.DataFrame(columns=('titre', 'id', 'acteurs', 'realisateur', 'date de sortie', 'genres', 'synopsis'))
+def start_scrap():
+    last_scraped_page = 0
+    for i in range(last_scraped_page+1, last_scraped_page+3):
+        boxes = get_films_box(i)
+        for box in boxes:
+            film = FilmInfo()
+            film.id = get_id(box)
+            film.titre = get_title(box)
+            film.director = get_real(box)
+            film.actors = get_actors(box)
+            film.synopsis = get_synopsis(box)
+            film.notes = get_notes(box)
+            film.date = get_date(box)
+
+def add_to_df(film: FilmInfo): #TODO: fonction pour envoyer vers df
+    pass
+
+def add_to_postgre(film: FilmInfo): #TODO: fonction pour envoyer vers db
+    pass
 
 
-def get_films_box(pagesIndex):
-    response = requests.get(i)
+
+#df2 = pd.DataFrame(columns=('titre', 'id', 'acteurs', 'realisateur', 'date de sortie', 'genres', 'synopsis', 'note'))
+
+
+def get_films_box(pages_index: int):
+    url = base_url + str(pages_index)
+    response = requests.get(url)
     print(response)
     soup = bs4.BeautifulSoup(response.text, 'html.parser')
-    films_box = soup.find_all("div", {"class":"entity-card-list"})
-    return films_box
+    film_boxes = soup.find_all("div", {"class":"entity-card-list"})
+    return film_boxes
 
 def get_title(film):
     title_url = film.find("a", {"class":"meta-title-link"})
@@ -54,7 +71,7 @@ def get_styles(film):
         genres.append(genre.text)
     return genres
 
-def get_date(film):
+def get_date(film): #TODO: convert date
     date = film.find('span', {'class':'date'}).text
     return date
 
@@ -65,7 +82,7 @@ def get_real(film):
         realisateurs.append(realisateur.text)
     return realisateurs
 
-def get_synopsis(film):
+def get_synopsis(film): #TODO: à retravailler
     synops = film.find_all("div", {"class":"content-txt"})
     synopsis=[]
     synopsis_clean=[]
@@ -76,8 +93,8 @@ def get_synopsis(film):
     return synopsis_clean
 
 def get_notes(film):
-    note_presse = 0
-    note_spec = 0
+    note_presse = 0.0
+    note_spec = 0.0
     evaluation = film.find_all('div', {'class':'rating-holder'})
     if len(evaluation) != 0:
         for rating in evaluation:
