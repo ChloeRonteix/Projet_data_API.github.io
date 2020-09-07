@@ -5,6 +5,7 @@ import pandas as pd
 from film_infos import FilmInfo
 
 base_url = 'http://www.allocine.fr/films/?page='
+df = pd.DataFrame(columns=('titre', 'id', 'acteurs', 'realisateur', 'date de sortie', 'genres', 'synopsis', 'note'))
 
 scrap = start_scrap()
 
@@ -21,16 +22,17 @@ def start_scrap():
             film.synopsis = get_synopsis(box)
             film.notes = get_notes(box)
             film.date = get_date(box)
+        time.sleep(5)
 
 def add_to_df(film: FilmInfo): #TODO: fonction pour envoyer vers df
-    pass
+    df = df.append(film.to_dictionary())
 
 def add_to_postgre(film: FilmInfo): #TODO: fonction pour envoyer vers db
     pass
 
 
 
-#df2 = pd.DataFrame(columns=('titre', 'id', 'acteurs', 'realisateur', 'date de sortie', 'genres', 'synopsis', 'note'))
+
 
 
 def get_films_box(pages_index: int):
@@ -170,7 +172,7 @@ for i in pages:
             print(f'pas de synopsis pour le film {title}')
         #print(synopsis_clean)
         df2 = df2.append({'titre':title, 'id':id_film, 'acteurs':acteur_clean, 'realisateur':real, 'date de sortie':date, 'genres':list_genre, 'synopsis':synopsis_clean}, ignore_index=True)
-        time.sleep(5)
+        
         
 
 df2['Genres'] = [', '.join(map(str, l)) for l in df2['genres']]
