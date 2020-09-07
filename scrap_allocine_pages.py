@@ -75,30 +75,16 @@ def get_synopsis(film):
         synopsis_clean.append((" ".join(i.split())))
     return synopsis_clean
 
-def get_note_presse(film):
-    evaluation = film.find_all('div', {'class':'rating-holder'})
+def get_notes(film):
     note_presse = 0
-    for rating in evaluation:
-        note = rating.find('span', {'class': 'stareval-note'})
-        note_presse += (float((note.text).replace(',', '.')))
-    return note_presse
-
-def get_note_spectateurs(film):
-    notes_spec = 0
+    note_spec = 0
     evaluation = film.find_all('div', {'class':'rating-holder'})
-    evas = []
-    for eva in evaluation:
-        rat = eva.find_all('span')
-        evas.append(rat)
-    list_notes = []
-    for note in evas:
-        del note[0:3]
-        del note[-1]
-        list_notes.append(note)
-    for i in list_notes:
-        for note in i:
-            notes_spec += float((note.text).replace(',', '.'))
-    return notes_spec
+    if len(evaluation) != 0:
+        for rating in evaluation:
+            notes = rating.find_all('span', {'class': 'stareval-note'})
+            note_presse += float((notes[0].text).replace(',', '.'))
+            note_spec += float((notes[1].text).replace(',', '.'))
+    return(note_presse, note_spec)
 
 
 
