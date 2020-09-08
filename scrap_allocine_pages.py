@@ -25,7 +25,7 @@ def start_scrap():
         time.sleep(5)
 
 def add_to_df(film: FilmInfo): #TODO: fonction pour envoyer vers df
-    df = df.append(film.to_dictionary())
+    df = df.append(film.to_dictionary(), ignore_index=True)
 
 def add_to_postgre(film: FilmInfo): #TODO: fonction pour envoyer vers db
     pass
@@ -105,7 +105,8 @@ def get_notes(film):
             note_spec += float((notes[1].text).replace(',', '.'))
     return(note_presse, note_spec)
 
-
+def get_id_actor(film):
+    pass
 
 
 
