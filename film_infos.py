@@ -16,10 +16,11 @@ class FilmInfo:
         'title':self.title,
         'id':self.id, 
         'acteurs':self.actors,
-         'directors':real, 
-         'date de sortie':date, 
-         'genres':list_genre, 
-         'synopsis':synopsis_clean
+         'directors':self.director, 
+         'date de sortie':self.date, 
+         'genres':self.genre, 
+         'synopsis':self.synopsis,
+         'notes': self.notes
          }
 
     
