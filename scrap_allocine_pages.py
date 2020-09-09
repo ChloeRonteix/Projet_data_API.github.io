@@ -3,15 +3,18 @@ import bs4
 import time
 import pandas as pd
 from film_infos import FilmInfo
+from datetime import date
+from actor_infos import ActorInfo
 
 base_url = 'http://www.allocine.fr/films/?page='
-df = pd.DataFrame(columns=('titre', 'id', 'acteurs', 'realisateur', 'date de sortie', 'genres', 'synopsis', 'note'))
 
-scrap = start_scrap()
+
+
 
 def start_scrap():
+    df = pd.DataFrame(columns=('title', 'id', 'actors', 'directors', 'date', 'genres', 'synopsis', 'notes_presse','note_spec'))
     last_scraped_page = 0
-    for i in range(last_scraped_page+1, last_scraped_page+3):
+    for i in range(last_scraped_page+1, last_scraped_page+2):
         boxes = get_films_box(i)
         for box in boxes:
             film = FilmInfo()
@@ -22,10 +25,13 @@ def start_scrap():
             film.synopsis = get_synopsis(box)
             film.notes = get_notes(box)
             film.date = get_date(box)
+            df = add_to_df(film,df)
         time.sleep(5)
+    print(df)
 
-def add_to_df(film: FilmInfo): #TODO: fonction pour envoyer vers df
-    df = df.append(film.to_dictionary(), ignore_index=True)
+
+def add_to_df(film: FilmInfo, data): #TODO: fonction pour envoyer vers df
+    return data.append(film.to_dictionary(), ignore_index=True)
 
 def add_to_postgre(film: FilmInfo): #TODO: fonction pour envoyer vers db
     pass
@@ -54,11 +60,17 @@ def get_id(film):
 
 def get_actors(film):
     actors = []
-    actors_film = film.find('div', {'class':'meta-body-actor'})
-    for acteurs in actors_film:
-        acteurs = acteur.find_all(["a","span"], class_=(lambda x: x != 'light'))
-        for acteur in acteurs:
-            actors.append(acteur.text)
+    actors_bloc = film.find('div', {'class':'meta-body-actor'})
+    actors_div = actors_bloc.find_all(["a","span"], class_=(lambda x: x != 'light'))
+    for acteur in actors_div:
+        id_actor = int
+        if acteur.name == "a":
+            url = acteur['href']
+            start = url.index('=')+1
+            end = url.index('.')
+            id_actor = int(url[start:end])
+        actor_info = ActorInfo(acteur.text, id_actor)
+        actors.append(actor_info)
     return actors
 
 def get_styles(film):
@@ -70,8 +82,14 @@ def get_styles(film):
     return genres
 
 def get_date(film): #TODO: convert date
-    date = film.find('span', {'class':'date'}).text
-    return date # Voir dateparser.parse(date_string).date()
+    months = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre']
+    date_div = film.find('span', {'class':'date'})
+    if date_div == None:
+        return None
+    date_part = date_div.text.split()
+    month_id = months.index(date_part[1])+1
+    film_date = date(int(date_part[2]), month_id, int(date_part[0]))
+    return film_date # Voir dateparser.parse(date_string).date()
 
 def get_real(film):
     real = film.find_all("a", {"class":"blue-link"})
@@ -80,34 +98,37 @@ def get_real(film):
         realisateurs.append(realisateur.text)
     return realisateurs
 
-def get_synopsis(film): #TODO: à retravailler
-    synops = film.find_all("div", {"class":"content-txt"})
-    synopsis=[]
-    synopsis_clean=[]
-    for i in synops:
-        synopsis.append(i.text)
-    for i in synopsis:
-        synopsis_clean.append((" ".join(i.split())))
-    return synopsis_clean
+def get_synopsis(film):
+    synops = film.find("div", {"class":"content-txt"})
+    if synops == None:
+        return None
+    return synops.text.strip()
 
 def get_notes(film):
     note_presse = 0.0
     note_spec = 0.0
-    evaluation = film.find_all('div', {'class':'rating-holder'})
-    if len(evaluation) != 0:
-        for rating in evaluation:
-            notes = rating.find_all('span', {'class': 'stareval-note'})
-            note_presse += float((notes[0].text).replace(',', '.'))
-            note_spec += float((notes[1].text).replace(',', '.'))
+    evaluation = film.find('div', {'class':'rating-holder'})
+    if evaluation == None:
+        return (None,None)
+    notes_div = evaluation.find_all('div', {'class':'rating-item-content'})
+    for note in notes_div:
+        note_float = None
+        note_value = note.find('span', {'class': 'stareval-note'}).text
+        if note_value != '--':
+            note_float = float(note_value.replace(',', '.'))
+        if "Spectateurs" in note.text:
+            note_spec = note_float
+        elif "Presse" in note.text:
+            note_presse = note_float
     return(note_presse, note_spec)
 
 def get_id_actor(film):
     pass
 
+start_scrap()
 #TODO: script de scrap with function
 
 
 
 print("FINI")
 
-print(df)
