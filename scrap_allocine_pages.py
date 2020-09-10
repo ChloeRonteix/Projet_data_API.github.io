@@ -19,7 +19,7 @@ def start_scrap():
         for box in boxes:
             film = FilmInfo()
             film.id = get_id(box)
-            film.titre = get_title(box)
+            film.title = get_title(box)
             film.director = get_real(box)
             film.actors = get_actors(box)
             film.synopsis = get_synopsis(box)
@@ -27,7 +27,7 @@ def start_scrap():
             film.date = get_date(box)
             df = add_to_df(film,df)
         #time.sleep(5)
-    print(df['title'])
+    print(df)
 
 
 def add_to_df(film: FilmInfo, data): #TODO: fonction pour envoyer vers df
@@ -71,6 +71,7 @@ def get_actors(film):
                 end = url.index('.')
                 id_actor = int(url[start:end])
             actor_info = ActorInfo(acteur.text, id_actor)
+            #print(actor_info.id, actor_info.full_name)
             actors.append(actor_info)
     return actors
 
