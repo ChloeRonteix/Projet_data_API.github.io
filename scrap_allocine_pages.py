@@ -26,8 +26,8 @@ def start_scrap():
             film.notes = get_notes(box)
             film.date = get_date(box)
             df = add_to_df(film,df)
-        time.sleep(5)
-    print(df)
+        #time.sleep(5)
+    print(df['title'])
 
 
 def add_to_df(film: FilmInfo, data): #TODO: fonction pour envoyer vers df
@@ -61,16 +61,17 @@ def get_id(film):
 def get_actors(film):
     actors = []
     actors_bloc = film.find('div', {'class':'meta-body-actor'})
-    actors_div = actors_bloc.find_all(["a","span"], class_=(lambda x: x != 'light'))
-    for acteur in actors_div:
-        id_actor = int
-        if acteur.name == "a":
-            url = acteur['href']
-            start = url.index('=')+1
-            end = url.index('.')
-            id_actor = int(url[start:end])
-        actor_info = ActorInfo(acteur.text, id_actor)
-        actors.append(actor_info)
+    if actors_bloc != None:
+        actors_div = actors_bloc.find_all(["a","span"], class_=(lambda x: x != 'light'))
+        for acteur in actors_div:
+            id_actor = int
+            if acteur.name == "a":
+                url = acteur['href']
+                start = url.index('=')+1
+                end = url.index('.')
+                id_actor = int(url[start:end])
+            actor_info = ActorInfo(acteur.text, id_actor)
+            actors.append(actor_info)
     return actors
 
 def get_styles(film):
