@@ -8,11 +8,16 @@ CREATE TABLE IF NOT EXISTS films (
     id SERIAL PRIMARY KEY,
     provider_id INTEGER,
     title VARCHAR(150),
-    director VARCHAR(50),
     date DATE,
     synopsis TEXT,
     note_press REAL,
     note_people REAL
+);
+
+CREATE TABLE IF NOT EXISTS directors (
+    id SERIAL PRIMARY KEY,
+    provider_id INTEGER,
+    full_name VARCHAR(50)
 );
 
 CREATE TABLE IF NOT EXISTS actors (
@@ -42,3 +47,10 @@ CREATE TABLE IF NOT EXISTS films_actors (
     FOREIGN KEY id_actor REFERENCES actors(id)
 );
 
+CREATE TABLE IF NOT EXISTS films_directors (
+    id SERIAL PRIMARY KEY,
+    id_film INTEGER,
+    id_director INTEGER,
+    FOREIGN KEY id_film REFERENCES films(id),
+    FOREIGN KEY id_director REFERENCES directors(id)
+);
