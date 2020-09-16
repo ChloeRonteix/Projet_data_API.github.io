@@ -93,7 +93,7 @@ def get_date(film): #TODO: convert date
     film_date = date(int(date_part[2]), month_id, int(date_part[0]))
     return film_date # Voir dateparser.parse(date_string).date()
 
-def get_real(film):
+def get_real(film): #TODO: get id provider
     real = film.find_all("a", {"class":"blue-link"})
     realisateurs = []
     for realisateur in real:
