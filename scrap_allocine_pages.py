@@ -16,7 +16,7 @@ base_url = 'http://www.allocine.fr/films/?page='
 def start_scrap():
     df = pd.DataFrame(columns=('title', 'id', 'actors', 'directors', 'date', 'genres', 'synopsis', 'notes_presse','note_spec'))
     last_scraped_page = 0
-    for i in range(last_scraped_page+1, last_scraped_page+2):
+    for i in range(last_scraped_page+1, last_scraped_page+3):
         boxes = get_films_box(i)
         for box in boxes:
             film = FilmInfo()
@@ -31,9 +31,9 @@ def start_scrap():
             df = add_to_df(film,df)
         #time.sleep(5)
     print(df)
-    print(df['actors'])
-    print(df['directors'])
-    print(df['genres'])
+    #print(df['date'])
+    #print(df['directors'])
+    #print(df['genres'])
 
 
 def add_to_df(film: FilmInfo, data): #TODO: fonction pour envoyer vers df

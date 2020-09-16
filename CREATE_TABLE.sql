@@ -35,22 +35,22 @@ CREATE TABLE IF NOT EXISTS films_genres (
     id SERIAL PRIMARY KEY,
     id_film INTEGER,
     id_genre INTEGER,
-    FOREIGN KEY id_film REFERENCES films(id),
-    FOREIGN KEY id_genre REFERENCES genres(id)
+    FOREIGN KEY (id_film) REFERENCES films(id),
+    FOREIGN KEY (id_genre) REFERENCES genres(id)
 );
 
 CREATE TABLE IF NOT EXISTS films_actors (
     id SERIAL PRIMARY KEY,
     id_film INTEGER,
     id_actor INTEGER,
-    FOREIGN KEY id_film REFERENCES films(id),
-    FOREIGN KEY id_actor REFERENCES actors(id)
+    FOREIGN KEY (id_film) REFERENCES films(id),
+    FOREIGN KEY (id_actor) REFERENCES actors(id)
 );
 
 CREATE TABLE IF NOT EXISTS films_directors (
     id SERIAL PRIMARY KEY,
     id_film INTEGER,
     id_director INTEGER,
-    FOREIGN KEY id_film REFERENCES films(id),
-    FOREIGN KEY id_director REFERENCES directors(id)
+    FOREIGN KEY (id_film) REFERENCES films(id),
+    FOREIGN KEY (id_director) REFERENCES directors(id)
 );
