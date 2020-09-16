@@ -5,6 +5,8 @@ import pandas as pd
 from film_infos import FilmInfo
 from datetime import date
 from actor_infos import ActorInfo
+from genre_infos import Genre
+from director_infos import Director
 
 base_url = 'http://www.allocine.fr/films/?page='
 
@@ -28,6 +30,9 @@ def start_scrap():
             df = add_to_df(film,df)
         #time.sleep(5)
     print(df)
+    print(df['actors'])
+    print(df['directors'])
+    print(df['genres'])
 
 
 def add_to_df(film: FilmInfo, data): #TODO: fonction pour envoyer vers df
@@ -97,7 +102,14 @@ def get_real(film): #TODO: get id provider
     real = film.find_all("a", {"class":"blue-link"})
     realisateurs = []
     for realisateur in real:
-        realisateurs.append(realisateur.text)
+        id_real = int
+        if realisateur.name == "a":
+            url = realisateur['href']
+            start = url.index('=')+1
+            end = url.index('.')
+            id_real = int(url[start:end])
+        director_info = Director(realisateur.text, id_real)
+        realisateurs.append(director_info)
     return realisateurs
 
 def get_synopsis(film):
@@ -123,9 +135,6 @@ def get_notes(film):
         elif "Presse" in note.text:
             note_presse = note_float
     return(note_presse, note_spec)
-
-def get_id_actor(film):
-    pass
 
 start_scrap()
 #TODO: script de scrap with function
