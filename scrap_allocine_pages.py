@@ -4,7 +4,9 @@ import time
 import pandas as pd
 from film_infos import FilmInfo
 from datetime import date
-from actor_infos import ActorInfo
+from people_infos import PeopleInfo
+from genre_infos import Genre
+
 
 base_url = 'http://www.allocine.fr/films/?page='
 
@@ -25,9 +27,13 @@ def start_scrap():
             film.synopsis = get_synopsis(box)
             film.notes = get_notes(box)
             film.date = get_date(box)
+            film.genre = get_styles(box)
             df = add_to_df(film,df)
         #time.sleep(5)
     print(df)
+    print(df['actors'])
+    print(df['directors'])
+    print(df['genres'])
 
 
 def add_to_df(film: FilmInfo, data): #TODO: fonction pour envoyer vers df
@@ -70,7 +76,7 @@ def get_actors(film):
                 start = url.index('=')+1
                 end = url.index('.')
                 id_actor = int(url[start:end])
-            actor_info = ActorInfo(acteur.text, id_actor)
+            actor_info = PeopleInfo(acteur.text, id_actor)
             #print(actor_info.id, actor_info.full_name)
             actors.append(actor_info)
     return actors
@@ -93,11 +99,18 @@ def get_date(film): #TODO: convert date
     film_date = date(int(date_part[2]), month_id, int(date_part[0]))
     return film_date # Voir dateparser.parse(date_string).date()
 
-def get_real(film):
+def get_real(film): #TODO: get id provider
     real = film.find_all("a", {"class":"blue-link"})
     realisateurs = []
     for realisateur in real:
-        realisateurs.append(realisateur.text)
+        id_real = int
+        if realisateur.name == "a":
+            url = realisateur['href']
+            start = url.index('=')+1
+            end = url.index('.')
+            id_real = int(url[start:end])
+        director_info = PeopleInfo(realisateur.text, id_real)
+        realisateurs.append(director_info)
     return realisateurs
 
 def get_synopsis(film):
@@ -123,9 +136,6 @@ def get_notes(film):
         elif "Presse" in note.text:
             note_presse = note_float
     return(note_presse, note_spec)
-
-def get_id_actor(film):
-    pass
 
 start_scrap()
 #TODO: script de scrap with function

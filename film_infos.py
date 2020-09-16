@@ -1,5 +1,5 @@
 from datetime import date
-from actor_infos import ActorInfo
+from people_infos import PeopleInfo
 class FilmInfo:
 
     def __init__(self):
@@ -17,7 +17,7 @@ class FilmInfo:
         'title':self.title,
         'id':self.id, 
         'actors': ", ".join(a.full_name for a in self.actors),
-        'directors': ", ".join(self.director), 
+        'directors': ", ".join(a.full_name for a in self.director), 
         'date':self.date, 
         'genres': ", ".join(self.genre), 
         'synopsis':self.synopsis,
