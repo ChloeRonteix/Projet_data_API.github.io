@@ -6,6 +6,7 @@ from film_infos import FilmInfo
 from datetime import date
 from people_infos import PeopleInfo
 from genre_infos import Genre
+import psycopg2
 
 
 base_url = 'http://www.allocine.fr/films/?page='
@@ -14,7 +15,7 @@ base_url = 'http://www.allocine.fr/films/?page='
 
 
 def start_scrap():
-    df = pd.DataFrame(columns=('title', 'id', 'actors', 'directors', 'date', 'genres', 'synopsis', 'notes_presse','note_spec'))
+    #df = pd.DataFrame(columns=('title', 'id', 'actors', 'directors', 'date', 'genres', 'synopsis', 'notes_presse','note_spec'))
     last_scraped_page = 0
     for i in range(last_scraped_page+1, last_scraped_page+3):
         boxes = get_films_box(i)
@@ -28,9 +29,10 @@ def start_scrap():
             film.notes = get_notes(box)
             film.date = get_date(box)
             film.genre = get_styles(box)
-            df = add_to_df(film,df)
+            #df = add_to_df(film,df)
+            add_to_postgres(film)
         #time.sleep(5)
-    print(df)
+    #print(df)
     #print(df['date'])
     #print(df['directors'])
     #print(df['genres'])
@@ -39,7 +41,13 @@ def start_scrap():
 def add_to_df(film: FilmInfo, data): #TODO: fonction pour envoyer vers df
     return data.append(film.to_dictionary(), ignore_index=True)
 
-def add_to_postgre(film: FilmInfo): #TODO: fonction pour envoyer vers db
+def add_to_postgres(film: FilmInfo): #TODO: fonction pour envoyer vers db
+    #connection to database
+    conn = psycopg2.connect(dbname="postgres", user="common", password="allocine", host="allocine.cnlsqrwefkra.eu-west-1.rds.amazonaws.com")
+    c=conn.cursor()
+    c.execute("INSERT INTO films (provider_id, title, date, synopsis, note_press, note_people) VALUES (%s, %s, %s, %s, %s, %s)", (film.id, film.title, film.date, film.synopsis, film.notes[0], film.notes[1]))
+    conn.commit()
+    conn.close()
     pass
 
 
