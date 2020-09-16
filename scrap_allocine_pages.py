@@ -4,9 +4,9 @@ import time
 import pandas as pd
 from film_infos import FilmInfo
 from datetime import date
-from actor_infos import ActorInfo
+from people_infos import PeopleInfo
 from genre_infos import Genre
-from director_infos import Director
+
 
 base_url = 'http://www.allocine.fr/films/?page='
 
@@ -27,6 +27,7 @@ def start_scrap():
             film.synopsis = get_synopsis(box)
             film.notes = get_notes(box)
             film.date = get_date(box)
+            film.genre = get_styles(box)
             df = add_to_df(film,df)
         #time.sleep(5)
     print(df)
@@ -75,7 +76,7 @@ def get_actors(film):
                 start = url.index('=')+1
                 end = url.index('.')
                 id_actor = int(url[start:end])
-            actor_info = ActorInfo(acteur.text, id_actor)
+            actor_info = PeopleInfo(acteur.text, id_actor)
             #print(actor_info.id, actor_info.full_name)
             actors.append(actor_info)
     return actors
@@ -108,7 +109,7 @@ def get_real(film): #TODO: get id provider
             start = url.index('=')+1
             end = url.index('.')
             id_real = int(url[start:end])
-        director_info = Director(realisateur.text, id_real)
+        director_info = PeopleInfo(realisateur.text, id_real)
         realisateurs.append(director_info)
     return realisateurs
 

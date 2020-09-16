@@ -1,5 +1,5 @@
 from datetime import date
-from actor_infos import ActorInfo
+from people_infos import PeopleInfo
 class FilmInfo:
 
     def __init__(self):
