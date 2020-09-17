@@ -7,7 +7,7 @@ from datetime import date
 from people_infos import PeopleInfo
 from genre_infos import Genre
 import psycopg2
-import sql_script as ss
+
 import postgres_functions as pf
 
 
@@ -48,7 +48,7 @@ def add_to_df(film: FilmInfo, data): #TODO: fonction pour envoyer vers df
 def add_to_postgres(film: FilmInfo): #TODO: fonction pour envoyer vers db
     #connection to database
     #conn = psycopg2.connect(dbname="postgres", user="common", password="allocine", host="allocine.cnlsqrwefkra.eu-west-1.rds.amazonaws.com")
-    c=conn.cursor()
+    #c=conn.cursor()
     pf.add_film_to_postgres()
     pf.add_genre_to_postgres(film.genre)
 
