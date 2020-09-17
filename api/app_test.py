@@ -1,31 +1,21 @@
-import flask 
+import flask
 from flask import request, jsonify
+import psycopg2
+import psycopg2.extras
+import sys
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 
-
-# test dict
-
-# visit http://127.0.0.1:5000/api/v1/resources/books/all
-
-# Create some test data for our catalog in the form of a list of dictionaries.
-books = [
-    {'id': 0,
-     'name': 'zizi'},
-    {'id': 1,
-     'name': 'pipi',},
-    {'id': 2,
-     'title': 'La divine Comedie'} # /! UTF8 "é" non supporté
-    ]
-
-@app.route('/', methods=['GET'])
-def home():
-    return "<h1>Distant Reading Archive</h1><p>This site is a prototype API for distant reading of science fiction novels.</p>"
-
-# A route to return all of the available entries in our catalog.
 @app.route('/api/v1/resources/books/all', methods=['GET'])
 def api_all():
-    return jsonify(books)
+    conn_string = "host='allocine.cnlsqrwefkra.eu-west-1.rds.amazonaws.com'" "dbname='postgres'" "user='common'" "password='allocine'" 
+    conn = psycopg2.connect(conn_string)
+
+    cursor = conn.cursor('cursor_unique_name', cursor_factory=psycopg2.extras.DictCursor)
+    cursor.execute('SELECT * FROM films LIMIT 50')
+    all_movies = cursor.fetchall()
+
+    return jsonify(all_movies)
 
 app.run()
