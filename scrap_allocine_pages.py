@@ -5,36 +5,27 @@ import pandas as pd
 from film_infos import FilmInfo
 from datetime import date
 from people_infos import PeopleInfo
-from genre_infos import Genre
 import psycopg2
 
-import postgres_functions as pf
+from postgres_functions import PostgresFilmsRepository
 
 
 base_url = 'http://www.allocine.fr/films/?page='
 
-conn = psycopg2.connect(dbname="postgres", user="common", password="allocine", host="allocine.cnlsqrwefkra.eu-west-1.rds.amazonaws.com")
-
+#conn = psycopg2.connect(dbname="postgres", user="common", password="allocine", host="allocine.cnlsqrwefkra.eu-west-1.rds.amazonaws.com")
+pf = PostgresFilmsRepository()
 
 
 def start_scrap():
     #df = pd.DataFrame(columns=('title', 'id', 'actors', 'directors', 'date', 'genres', 'synopsis', 'notes_presse','note_spec'))
-    last_scraped_page = get_last_page()
+    last_scraped_page = pf.get_last_page()
     for i in range(last_scraped_page+1, last_scraped_page+2):
         boxes = get_films_box(i)
         for box in boxes:
-            film = FilmInfo()
-            film.id = get_id(box)
-            film.title = get_title(box)
-            film.director = get_real(box)
-            film.actors = get_actors(box)
-            film.synopsis = get_synopsis(box)
-            film.notes = get_notes(box)
-            film.date = get_date(box)
-            film.genre = get_styles(box)
+            film = get_filmInfos(box)
             #df = add_to_df(film,df)
             add_to_postgres(film)
-        save_page(i)
+        pf.save_page(i)
         time.sleep(1)
     #print(df)
     #print(df['date'])
@@ -49,8 +40,8 @@ def add_to_postgres(film: FilmInfo): #TODO: fonction pour envoyer vers db
     #connection to database
     #conn = psycopg2.connect(dbname="postgres", user="common", password="allocine", host="allocine.cnlsqrwefkra.eu-west-1.rds.amazonaws.com")
     #c=conn.cursor()
-    pf.add_film_to_postgres()
-    pf.add_genre_to_postgres(film.genre)
+    pf.add_film_to_postgres(film)
+    pf.add_genre_to_postgres(film.genres)
 
 def get_films_box(pages_index: int):
     url = base_url + str(pages_index)
@@ -146,23 +137,17 @@ def get_notes(film):
             note_presse = note_float
     return(note_presse, note_spec)
 
-def get_last_page() -> int:
-    #connection to database
-    c = conn.cursor()
-    try:
-        c.execute(ss.get_last_scraped_page)
-        return c.fetchone()[0]
-    except Exception as e:
-        print(e)
-        return 0
-
-def save_page(page_id:int):
-    c = conn.cursor()
-    try:
-        c.execute(ss.save_scraped_page, (page_id,))
-        conn.commit()
-    except Exception as e:
-        print(e)
+def get_filmInfos(box) -> FilmInfo:
+    film = FilmInfo()
+    film.id = get_id(box)
+    film.title = get_title(box)
+    film.director = get_real(box)
+    film.actors = get_actors(box)
+    film.synopsis = get_synopsis(box)
+    film.notes = get_notes(box)
+    film.date = get_date(box)
+    film.genres = get_styles(box)
+    return film
 
 
 #DEBUT SCRAPING

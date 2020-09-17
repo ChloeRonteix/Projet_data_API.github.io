@@ -8,7 +8,7 @@ class FilmInfo:
         self.id = int
         self.actors = []
         self.director = []
-        self.genre = []
+        self.genres = []
         self.synopsis = str
         self.notes = (float,float)
 
@@ -19,7 +19,7 @@ class FilmInfo:
         'actors': ", ".join(a.full_name for a in self.actors),
         'directors': ", ".join(a.full_name for a in self.director), 
         'date':self.date, 
-        'genres': ", ".join(self.genre), 
+        'genres': ", ".join(self.genres), 
         'synopsis':self.synopsis,
         'notes_presse': self.notes[0],
         'note_spec': self.notes[1]
