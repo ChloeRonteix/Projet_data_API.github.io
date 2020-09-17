@@ -6,7 +6,6 @@ from film_infos import FilmInfo
 from datetime import date
 from people_infos import PeopleInfo
 import psycopg2
-
 from postgres_functions import PostgresFilmsRepository
 
 
