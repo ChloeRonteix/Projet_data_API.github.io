@@ -8,6 +8,7 @@ from people_infos import PeopleInfo
 from genre_infos import Genre
 import psycopg2
 import sql_script as ss
+import postgres_functions as pf
 
 
 base_url = 'http://www.allocine.fr/films/?page='
@@ -19,7 +20,7 @@ conn = psycopg2.connect(dbname="postgres", user="common", password="allocine", h
 def start_scrap():
     #df = pd.DataFrame(columns=('title', 'id', 'actors', 'directors', 'date', 'genres', 'synopsis', 'notes_presse','note_spec'))
     last_scraped_page = get_last_page()
-    for i in range(last_scraped_page+1, last_scraped_page+10):
+    for i in range(last_scraped_page+1, last_scraped_page+2):
         boxes = get_films_box(i)
         for box in boxes:
             film = FilmInfo()
@@ -48,11 +49,8 @@ def add_to_postgres(film: FilmInfo): #TODO: fonction pour envoyer vers db
     #connection to database
     #conn = psycopg2.connect(dbname="postgres", user="common", password="allocine", host="allocine.cnlsqrwefkra.eu-west-1.rds.amazonaws.com")
     c=conn.cursor()
-    try:
-        c.execute(ss.insert_film, (film.id, film.title, film.date, film.synopsis, film.notes[0], film.notes[1]))
-        conn.commit()
-    except Exception as e:
-        print(e)
+    pf.add_film_to_postgres()
+    pf.add_genre_to_postgres(film.genre)
 
 def get_films_box(pages_index: int):
     url = base_url + str(pages_index)
