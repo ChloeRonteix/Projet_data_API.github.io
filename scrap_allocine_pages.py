@@ -7,17 +7,19 @@ from datetime import date
 from people_infos import PeopleInfo
 from genre_infos import Genre
 import psycopg2
+import sql_script as ss
 
 
 base_url = 'http://www.allocine.fr/films/?page='
 
+conn = psycopg2.connect(dbname="postgres", user="common", password="allocine", host="allocine.cnlsqrwefkra.eu-west-1.rds.amazonaws.com")
 
 
 
 def start_scrap():
     #df = pd.DataFrame(columns=('title', 'id', 'actors', 'directors', 'date', 'genres', 'synopsis', 'notes_presse','note_spec'))
-    last_scraped_page = 0
-    for i in range(last_scraped_page+1, last_scraped_page+3):
+    last_scraped_page = get_last_page()
+    for i in range(last_scraped_page+1, last_scraped_page+10):
         boxes = get_films_box(i)
         for box in boxes:
             film = FilmInfo()
@@ -31,7 +33,8 @@ def start_scrap():
             film.genre = get_styles(box)
             #df = add_to_df(film,df)
             add_to_postgres(film)
-        #time.sleep(5)
+        save_page(i)
+        time.sleep(1)
     #print(df)
     #print(df['date'])
     #print(df['directors'])
@@ -43,13 +46,13 @@ def add_to_df(film: FilmInfo, data): #TODO: fonction pour envoyer vers df
 
 def add_to_postgres(film: FilmInfo): #TODO: fonction pour envoyer vers db
     #connection to database
-    conn = psycopg2.connect(dbname="postgres", user="common", password="allocine", host="allocine.cnlsqrwefkra.eu-west-1.rds.amazonaws.com")
+    #conn = psycopg2.connect(dbname="postgres", user="common", password="allocine", host="allocine.cnlsqrwefkra.eu-west-1.rds.amazonaws.com")
     c=conn.cursor()
-    c.execute("INSERT INTO films (provider_id, title, date, synopsis, note_press, note_people) VALUES (%s, %s, %s, %s, %s, %s)", (film.id, film.title, film.date, film.synopsis, film.notes[0], film.notes[1]))
-    conn.commit()
-    conn.close()
-    pass
-
+    try:
+        c.execute(ss.insert_film, (film.id, film.title, film.date, film.synopsis, film.notes[0], film.notes[1]))
+        conn.commit()
+    except Exception as e:
+        print(e)
 
 def get_films_box(pages_index: int):
     url = base_url + str(pages_index)
@@ -145,10 +148,28 @@ def get_notes(film):
             note_presse = note_float
     return(note_presse, note_spec)
 
+def get_last_page() -> int:
+    #connection to database
+    c = conn.cursor()
+    try:
+        c.execute(ss.get_last_scraped_page)
+        return c.fetchone()[0]
+    except Exception as e:
+        print(e)
+        return 0
+
+def save_page(page_id:int):
+    c = conn.cursor()
+    try:
+        c.execute(ss.save_scraped_page, (page_id,))
+        conn.commit()
+    except Exception as e:
+        print(e)
+
+
+#DEBUT SCRAPING
 start_scrap()
-#TODO: script de scrap with function
 
-
-
+#FIN SCRAPING
 print("FINI")
 
