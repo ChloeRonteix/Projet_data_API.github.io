@@ -5,7 +5,7 @@ class FilmInfo:
     def __init__(self):
         self.title = str
         self.date = date
-        self.id = int
+        self.provider_id = int
         self.actors = []
         self.director = []
         self.genres = []
@@ -15,7 +15,7 @@ class FilmInfo:
     def to_dictionary(self): #TODO: à finir!!! fonction de sérialisation
         return {
         'title':self.title,
-        'id':self.id, 
+        'id':self.provider_id, 
         'actors': ", ".join(a.full_name for a in self.actors),
         'directors': ", ".join(a.full_name for a in self.director), 
         'date':self.date, 

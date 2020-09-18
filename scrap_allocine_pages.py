@@ -18,7 +18,7 @@ pf = PostgresFilmsRepository()
 def start_scrap():
     #df = pd.DataFrame(columns=('title', 'id', 'actors', 'directors', 'date', 'genres', 'synopsis', 'notes_presse','note_spec'))
     last_scraped_page = pf.get_last_page()
-    for i in range(last_scraped_page+1, last_scraped_page+2):
+    for i in range(last_scraped_page+1, last_scraped_page+5):
         boxes = get_films_box(i)
         for box in boxes:
             film = get_filmInfos(box)
@@ -39,8 +39,8 @@ def add_to_postgres(film: FilmInfo): #TODO: fonction pour envoyer vers db
     #connection to database
     #conn = psycopg2.connect(dbname="postgres", user="common", password="allocine", host="allocine.cnlsqrwefkra.eu-west-1.rds.amazonaws.com")
     #c=conn.cursor()
-    pf.add_film_to_postgres(film)
-    pf.add_genre_to_postgres(film.genres)
+    film_id = pf.add_film_to_postgres(film)
+    pf.add_genre_to_postgres(film.genres, film_id)
 
 def get_films_box(pages_index: int):
     url = base_url + str(pages_index)
@@ -138,7 +138,7 @@ def get_notes(film):
 
 def get_filmInfos(box) -> FilmInfo:
     film = FilmInfo()
-    film.id = get_id(box)
+    film.provider_id = get_id(box)
     film.title = get_title(box)
     film.director = get_real(box)
     film.actors = get_actors(box)
