@@ -31,3 +31,25 @@ get_film_id_by_provider_id = '''
 SELECT id FROM films
 WHERE provider_id = %s;
 '''
+
+insert_people = '''
+INSERT INTO people (provider_id, full_name)
+VALUES (%s, %s);
+'''
+
+insert_actor_for_film = '''
+INSERT INTO films_actors (id_film, id_actor)
+VALUES (%s, %s);
+'''
+
+insert_director_for_film = '''
+INSERT INTO films_actors (id_film, id_director)
+VALUES (%s, %s);
+'''
+
+get_people_id_by_name_and_provider_id = '''
+SELECT id 
+FROM people
+WHERE name = %s
+AND COALESCE(provider_id,0) = COALESCE(%s,0);
+'''
