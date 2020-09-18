@@ -91,8 +91,8 @@ class PostgresFilmsRepository:
         try:
             c.execute(ss.get_last_scraped_page)
             return c.fetchone()[0]
-        except Exception as e:
-            print(e)
+        except:
+            print('Last page not found')
             return 0
 
     def save_page(self, page_id:int):

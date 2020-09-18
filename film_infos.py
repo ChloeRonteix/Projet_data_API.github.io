@@ -3,14 +3,14 @@ from people_infos import PeopleInfo
 class FilmInfo:
 
     def __init__(self):
-        self.title = str
-        self.date = date
-        self.provider_id = int
+        self.title = None
+        self.date = None
+        self.provider_id = None
         self.actors = []
         self.director = []
         self.genres = []
-        self.synopsis = str
-        self.notes = (float,float)
+        self.synopsis = None
+        self.notes = (None,None)
 
     def to_dictionary(self): #TODO: à finir!!! fonction de sérialisation
         return {

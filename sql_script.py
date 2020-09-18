@@ -33,8 +33,9 @@ WHERE provider_id = %s;
 '''
 
 insert_people = '''
-INSERT INTO people (provider_id, full_name)
-VALUES (%s, %s);
+INSERT INTO people (full_name, provider_id)
+VALUES (%s, %s)
+RETURNING id;
 '''
 
 insert_actor_for_film = '''
@@ -43,13 +44,13 @@ VALUES (%s, %s);
 '''
 
 insert_director_for_film = '''
-INSERT INTO films_actors (id_film, id_director)
+INSERT INTO films_directors (id_film, id_director)
 VALUES (%s, %s);
 '''
 
 get_people_id_by_name_and_provider_id = '''
 SELECT id 
 FROM people
-WHERE name = %s
+WHERE full_name = %s
 AND COALESCE(provider_id,0) = COALESCE(%s,0);
 '''

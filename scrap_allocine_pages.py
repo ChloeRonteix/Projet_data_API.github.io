@@ -18,13 +18,15 @@ pf = PostgresFilmsRepository()
 def start_scrap():
     #df = pd.DataFrame(columns=('title', 'id', 'actors', 'directors', 'date', 'genres', 'synopsis', 'notes_presse','note_spec'))
     last_scraped_page = pf.get_last_page()
-    for i in range(last_scraped_page+1, last_scraped_page+5):
+    for i in range(last_scraped_page+1, last_scraped_page+10):
         boxes = get_films_box(i)
         for box in boxes:
             film = get_filmInfos(box)
             #df = add_to_df(film,df)
             add_to_postgres(film)
+        print(f'Page {i} scrapped!')
         pf.save_page(i)
+        print(f'Page {i} saved!')
         time.sleep(1)
     #print(df)
     #print(df['date'])
@@ -68,7 +70,7 @@ def get_actors(film):
     if actors_bloc != None:
         actors_div = actors_bloc.find_all(["a","span"], class_=(lambda x: x != 'light'))
         for acteur in actors_div:
-            id_actor = int
+            id_actor = None
             if acteur.name == "a":
                 url = acteur['href']
                 start = url.index('=')+1
@@ -101,7 +103,7 @@ def get_real(film): #TODO: get id provider
     real = film.find_all("a", {"class":"blue-link"})
     realisateurs = []
     for realisateur in real:
-        id_real = int
+        id_real = None
         if realisateur.name == "a":
             url = realisateur['href']
             start = url.index('=')+1
