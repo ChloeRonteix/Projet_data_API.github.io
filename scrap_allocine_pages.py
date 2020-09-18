@@ -32,15 +32,14 @@ def start_scrap():
     #print(df['genres'])
 
 
-def add_to_df(film: FilmInfo, data): #TODO: fonction pour envoyer vers df
+def add_to_df(film: FilmInfo, data):
     return data.append(film.to_dictionary(), ignore_index=True)
 
-def add_to_postgres(film: FilmInfo): #TODO: fonction pour envoyer vers db
-    #connection to database
-    #conn = psycopg2.connect(dbname="postgres", user="common", password="allocine", host="allocine.cnlsqrwefkra.eu-west-1.rds.amazonaws.com")
-    #c=conn.cursor()
+def add_to_postgres(film: FilmInfo): 
     film_id = pf.add_film_to_postgres(film)
     pf.add_genre_to_postgres(film.genres, film_id)
+    pf.add_actor_to_postgres(film.actors, film_id)
+    pf.add_director_to_postgres(film.director, film_id)
 
 def get_films_box(pages_index: int):
     url = base_url + str(pages_index)
