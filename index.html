@@ -1,11 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title> dashboard Allocine</title>
+  </head>
+
+  <body>
+  
+    <div class="content">
+      <header>
+        <div class="header-background"></div>
+        <div class="title">
+          <h1>
+            Mon dashboard
+          </h1>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      </header>
+      
+      <main>
+        <div class="chartContainer">
+        </div>
+      </main>
+    </div>
     
-</body>
+    <script type="text/javascript">
+        console.log("bonjour");
+        
+        $.ajax({
+            url: "http://127.0.0.1:5000/api/v1/resources/books/all",
+            success: display_news
+        });
+
+	    console.log("Au revoir");
+        
+        function display_news(json_movies){
+            console.log("Nous allons afficher les articles de presse");
+        }
+    </script>
+    <script src="static/application.js"></script>
+
+  </body>
+  
 </html>
