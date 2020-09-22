@@ -18,7 +18,7 @@ pf = PostgresFilmsRepository()
 def start_scrap():
     #df = pd.DataFrame(columns=('title', 'id', 'actors', 'directors', 'date', 'genres', 'synopsis', 'notes_presse','note_spec'))
     last_scraped_page = pf.get_last_page()
-    for i in range(last_scraped_page+1, last_scraped_page+10):
+    for i in range(last_scraped_page+1, last_scraped_page+11):
         boxes = get_films_box(i)
         for box in boxes:
             film = get_filmInfos(box)
