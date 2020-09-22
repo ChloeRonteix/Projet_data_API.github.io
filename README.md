@@ -17,6 +17,9 @@ Les données du site Allociné
 
 # Compétences développées
 - Scraping web
-- Création d'une BDD relationnelle
-- Création d'une API
-- Mise en page d'une page web
+- Création d'une BDD relationnelle et mise en ligne de cette base sur AWS
+- Création d'une API et hébergement sur Heroku
+- Mise en page d'une page web hébergée sur Github_pages
+
+# API
+Documentation à venir

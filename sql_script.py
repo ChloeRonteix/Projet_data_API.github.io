@@ -54,3 +54,42 @@ FROM people
 WHERE full_name = %s
 AND COALESCE(provider_id,0) = COALESCE(%s,0);
 '''
+
+get_film_by_id = '''
+SELECT id, provider_id, title, date, synopsis, note_press, note_people 
+FROM films WHERE id = %s
+'''
+
+get_genres_film = '''
+SELECT g.name FROM genres g 
+JOIN films_genres fg ON g.id = fg.id_genre 
+WHERE fg.id_film = %s;
+'''
+
+get_actors_by_film = '''
+SELECT p.full_name FROM people p 
+JOIN films_actors fa ON p.id = fa.id_actor 
+WHERE fa.id_film = %s
+'''
+
+get_directors_by_film = '''
+SELECT p.full_name FROM people p 
+JOIN films_directors fa ON p.id = fa.id_director 
+WHERE fa.id_film = %s
+'''
+
+get_people_by_id = '''
+SELECT id, provider_id, full_name FROM people WHERE id = %s
+'''
+
+get_films_by_actor = '''
+SELECT f.title FROM films f 
+JOIN films_actors fa ON f.id = fa.id_film 
+WHERE fa.id_actor = %s;
+'''
+
+get_films_by_director = '''
+SELECT f.title FROM films f 
+JOIN films_directors fa ON f.id = fa.id_film 
+WHERE fa.id_director = %s;
+'''
