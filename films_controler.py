@@ -5,6 +5,7 @@ import psycopg2.extras
 import sys
 from film_infos import FilmInfo
 from people_infos import PeopleInfo
+import sql_script as ss
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
@@ -25,7 +26,7 @@ def api_all():
 @app.route('/api/v1/films/<int:film_id>', methods=['GET'])
 def get_film_by_id(film_id:int):
     cursor = conn.cursor()
-    cursor.execute('SELECT id, provider_id, title, date, synopsis, note_press, note_people FROM films WHERE id = %s', (film_id,))
+    cursor.execute(ss.get_film_by_id, (film_id,))
     movie = cursor.fetchone()
     film = FilmInfo()
     film.id = movie[0]
@@ -34,16 +35,63 @@ def get_film_by_id(film_id:int):
     film.date = movie[3]
     film.synopsis = movie[4]
     film.notes = (movie[5],movie[6])
-    cursor.execute('SELECT g.name from genres g JOIN films_genres fg ON g.id = fg.id_genre WHERE fg.id_film = %s;', (film_id,))
+    cursor.execute(ss.get_genres_film, (film_id,))
     genres = cursor.fetchall()
     for genre in genres:
         film.genres.append(genre[0])
-    cursor.execute('SELECT p.full_name from people p JOIN films_actors fa ON p.id = fa.id_actor WHERE fa.id_film = %s', (film_id,))
+    cursor.execute(ss.get_actors_film, (film_id,))
     actors = cursor.fetchall()
     for actor in actors:
         people = PeopleInfo(actor[0],None)
         film.actors.append(people)
+    cursor.execute(ss.get_directors_film, (film_id,))
+    directors = cursor.fetchall()
+    for director in directors:
+        people = PeopleInfo(director[0],None)
+        film.director.append(people)
     return film.toJSON()
 
+@app.route('/api/v1/people/<int:people_id>', methods=['GET'])
+def get_people_by_id(people_id:int):
+    cursor = conn.cursor()
+    cursor.execute(ss.get_people_by_id, (people_id,))
+    people = cursor.fetchone()
+    p = PeopleInfo(people[2],people[1])
+    p.id = people[0] 
+    return p.toJSON()
+
+@app.route('/api/v1/people/<int:people_id>/film_actor', methods=['GET'])
+def get_films_by_id_actor(people_id:int):
+    cursor = conn.cursor() 
+    cursor.execute(ss.get_films_by_actor, (people_id,))
+    films = cursor.fetchall()
+    films_titles = []
+    for film in films:
+        films_titles.append(film[0])
+    return jsonify(films_titles)
+
+@app.route('/api/v1/people/<int:people_id>/film_director', methods=['GET'])
+def get_films_by_id_director(people_id:int):
+    cursor = conn.cursor() 
+    cursor.execute(ss.get_films_by_director, (people_id,))
+    films = cursor.fetchall()
+    films_titles = []
+    for film in films:
+        films_titles.append(film[0])
+    return jsonify(films_titles)
+    
+@app.route('/api/v1/people/<int:people_id>/filmography', methods=['GET']) #route avec query parameter
+def get_filmography(people_id:int):
+    role = request.args.get('role')
+    cursor = conn.cursor()
+    if role == 'director':
+        cursor.execute(ss.get_films_by_director, (people_id,))
+    elif role == 'actor':
+        cursor.execute(ss.get_films_by_actor, (people_id,))
+    films = cursor.fetchall()
+    films_titles = []
+    for film in films:
+        films_titles.append(film[0])
+    return jsonify(films_titles)
 
 app.run()
