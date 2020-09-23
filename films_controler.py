@@ -1,16 +1,21 @@
 import flask
-from flask import request, jsonify
+from flask import request, jsonify, Flask
 import psycopg2
 import psycopg2.extras
 import sys
 from film_infos import FilmInfo
 from people_infos import PeopleInfo
 import sql_script as ss
+from flask_swagger import swagger
 
-app = flask.Flask(__name__)
+app = Flask(__name__)
 app.config["DEBUG"] = True
 conn_string = "host='allocine.cnlsqrwefkra.eu-west-1.rds.amazonaws.com'" "dbname='postgres'" "user='common'" "password='allocine'" 
 conn = psycopg2.connect(conn_string)
+
+@app.route("/spec")
+def spec():#TODO
+    return jsonify(swagger(app))
 
 @app.route('/api/v1/resources/books/all', methods=['GET'])
 def api_all():
