@@ -2,11 +2,19 @@ import psycopg2
 import sql_script as ss
 from film_infos import FilmInfo
 from people_infos import PeopleInfo
+import os
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
+
+dbname = os.getenv("dbname")
+user = os.getenv("user")
+password = os.getenv("password")
+host = os.getenv("host")
 
 class PostgresFilmsRepository:
 
     def __init__(self):
-        self.conn = psycopg2.connect(dbname="postgres", user="common", password="allocine", host="allocine.cnlsqrwefkra.eu-west-1.rds.amazonaws.com")
+        self.conn = psycopg2.connect(dbname=dbname, user=user, password=password, host=host)
 
     def add_film_to_postgres(self, film: FilmInfo) -> int:
         c = self.conn.cursor()

@@ -93,3 +93,12 @@ SELECT f.title FROM films f
 JOIN films_directors fa ON f.id = fa.id_film 
 WHERE fa.id_director = %s;
 '''
+
+get_all_genres = '''
+SELECT * FROM genres;
+'''
+
+get_genre_by_id = '''
+SELECT name FROM genres
+WHERE id = %s;
+'''

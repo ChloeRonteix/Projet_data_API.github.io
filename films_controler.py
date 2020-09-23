@@ -39,12 +39,12 @@ def get_film_by_id(film_id:int):
     genres = cursor.fetchall()
     for genre in genres:
         film.genres.append(genre[0])
-    cursor.execute(ss.get_actors_film, (film_id,))
+    cursor.execute(ss.get_actors_by_film, (film_id,))
     actors = cursor.fetchall()
     for actor in actors:
         people = PeopleInfo(actor[0],None)
         film.actors.append(people)
-    cursor.execute(ss.get_directors_film, (film_id,))
+    cursor.execute(ss.get_directors_by_film, (film_id,))
     directors = cursor.fetchall()
     for director in directors:
         people = PeopleInfo(director[0],None)
@@ -93,5 +93,24 @@ def get_filmography(people_id:int):
     for film in films:
         films_titles.append(film[0])
     return jsonify(films_titles)
+
+@app.route('/api/v1/genres/all', methods=['GET'])
+def get_all_genres():
+    cursor = conn.cursor() 
+    cursor.execute(ss.get_all_genres)
+    genres = cursor.fetchall()
+    genres_list = []
+    for genre in genres:
+        genres_list.append(genre)
+    return jsonify(genres_list)
+
+@app.route('/api/v1/genres/<int:genre_id>', methods=['GET'])
+def get_genre_by_id(genre_id:int):
+    cursor = conn.cursor() 
+    cursor.execute(ss.get_genre_by_id, (genre_id,))
+    genre = cursor.fetchone()
+    return jsonify(genre)
+
+#TODO: route films selon l'id du genre
 
 app.run()
