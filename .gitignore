@@ -2,3 +2,4 @@ mdp.txt
 Untitled.ipynb
 .ipynb_checkpoints/Untitled-checkpoint.ipynb
 *.pyc
+.env
