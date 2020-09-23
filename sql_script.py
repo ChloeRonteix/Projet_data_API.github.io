@@ -95,10 +95,17 @@ WHERE fa.id_director = %s;
 '''
 
 get_all_genres = '''
-SELECT * FROM genres;
+SELECT name FROM genres;
 '''
 
 get_genre_by_id = '''
 SELECT name FROM genres
 WHERE id = %s;
+'''
+
+get_films_by_genre = '''
+SELECT f.title from films f
+JOIN films_genres fg ON f.id = fg.id_film
+JOIN genres g ON g.id = fg.id_genre
+WHERE g.name = %s;
 '''
