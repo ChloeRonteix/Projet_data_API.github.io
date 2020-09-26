@@ -89,7 +89,7 @@ WHERE fa.id_actor = %s;
 '''
 
 get_films_by_director = '''
-SELECT f.title FROM films f 
+SELECT f.title, extract( year from f.date) FROM films f 
 JOIN films_directors fa ON f.id = fa.id_film 
 WHERE fa.id_director = %s;
 '''
@@ -108,4 +108,10 @@ SELECT f.title from films f
 JOIN films_genres fg ON f.id = fg.id_film
 JOIN genres g ON g.id = fg.id_genre
 WHERE g.name = %s;
+'''
+
+count_films_by_month = '''
+SELECT extract(month from date)::int, count(*) from films
+group by extract(month from date)
+ORDER by extract(month from date);
 '''

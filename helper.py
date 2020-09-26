@@ -1,3 +1,5 @@
+
+
 #transforme un objet en dictionnaire récursivement
 def todict(obj, classkey=None):
     if isinstance(obj, dict):
@@ -18,3 +20,4 @@ def todict(obj, classkey=None):
         return data
     else:
         return obj
+

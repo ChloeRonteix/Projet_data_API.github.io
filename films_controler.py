@@ -79,7 +79,7 @@ def get_filmography(people_id:int):
     films = cursor.fetchall()
     films_titles = []
     for film in films:
-        films_titles.append(film[0])
+        films_titles.append([film[0], film[1]])
     return jsonify(films_titles)
 
 @app.route('/api/v1/genres/all', methods=['GET'])
@@ -104,6 +104,18 @@ def get_films_by_genre():
     for film in films:
         films_titles.append(film[0])
     return jsonify(films_titles)
+
+@app.route('/api/v1/films/month', methods=['GET']) #nombre de films par annnée
+def get_count_films_by_month(): #TODO
+    cursor = conn.cursor()
+    cursor.execute(ss.count_films_by_month)
+    films_month = cursor.fetchall()
+    list_films_month = []
+    for film in films_month:
+        list_films_month.append({'month': film[0], 'number_of_films': film[1]})
+    response = jsonify(list_films_month)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 @app.route("/spec")
 def spec():#TODO
