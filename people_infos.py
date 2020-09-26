@@ -7,8 +7,7 @@ class PeopleInfo:
         self.provider_id = provider_id
         self.id = None
     
-    def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=False)
+
     
 
     

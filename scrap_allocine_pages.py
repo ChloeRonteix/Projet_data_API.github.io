@@ -95,8 +95,11 @@ def get_date(film): #TODO: convert date
     if date_div == None:
         return None
     date_part = date_div.text.split()
-    month_id = months.index(date_part[1])+1
-    film_date = date(int(date_part[2]), month_id, int(date_part[0]))
+    if len(date_part) == 1:
+        film_date = date(int(date_part[0]), 1, 1)
+    else:
+        month_id = months.index(date_part[1])+1
+        film_date = date(int(date_part[2]), month_id, int(date_part[0]))
     return film_date # Voir dateparser.parse(date_string).date()
 
 def get_real(film): #TODO: get id provider

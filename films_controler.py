@@ -1,16 +1,20 @@
 import flask
-from flask import request, jsonify
+from flask import request, jsonify, Flask
 import psycopg2
 import psycopg2.extras
 import sys
 from film_infos import FilmInfo
 from people_infos import PeopleInfo
 import sql_script as ss
+from flask_swagger import swagger
+import json
+import helper
 
-app = flask.Flask(__name__)
+app = Flask(__name__)
 app.config["DEBUG"] = True
 conn_string = "host='allocine.cnlsqrwefkra.eu-west-1.rds.amazonaws.com'" "dbname='postgres'" "user='common'" "password='allocine'" 
 conn = psycopg2.connect(conn_string)
+
 
 @app.route('/api/v1/resources/books/all', methods=['GET'])
 def api_all():
@@ -49,7 +53,7 @@ def get_film_by_id(film_id:int):
     for director in directors:
         people = PeopleInfo(director[0],None)
         film.director.append(people)
-    return film.toJSON()
+    return jsonify(helper.todict(film))
 
 @app.route('/api/v1/people/<int:people_id>', methods=['GET'])
 def get_people_by_id(people_id:int):
@@ -58,40 +62,24 @@ def get_people_by_id(people_id:int):
     people = cursor.fetchone()
     p = PeopleInfo(people[2],people[1])
     p.id = people[0] 
-    return p.toJSON()
-
-@app.route('/api/v1/people/<int:people_id>/film_actor', methods=['GET'])
-def get_films_by_id_actor(people_id:int):
-    cursor = conn.cursor() 
-    cursor.execute(ss.get_films_by_actor, (people_id,))
-    films = cursor.fetchall()
-    films_titles = []
-    for film in films:
-        films_titles.append(film[0])
-    return jsonify(films_titles)
-
-@app.route('/api/v1/people/<int:people_id>/film_director', methods=['GET'])
-def get_films_by_id_director(people_id:int):
-    cursor = conn.cursor() 
-    cursor.execute(ss.get_films_by_director, (people_id,))
-    films = cursor.fetchall()
-    films_titles = []
-    for film in films:
-        films_titles.append(film[0])
-    return jsonify(films_titles)
+    return jsonify(helper.todict(p))
     
 @app.route('/api/v1/people/<int:people_id>/filmography', methods=['GET']) #route avec query parameter
 def get_filmography(people_id:int):
     role = request.args.get('role')
+    if role == None:
+        return jsonify('Please specify a role!'), 500
     cursor = conn.cursor()
     if role == 'director':
         cursor.execute(ss.get_films_by_director, (people_id,))
     elif role == 'actor':
         cursor.execute(ss.get_films_by_actor, (people_id,))
+    else:
+        return jsonify('Invalid role! Valid role are: [actor, director]')
     films = cursor.fetchall()
     films_titles = []
     for film in films:
-        films_titles.append(film[0])
+        films_titles.append([film[0], film[1]])
     return jsonify(films_titles)
 
 @app.route('/api/v1/genres/all', methods=['GET'])
@@ -101,15 +89,37 @@ def get_all_genres():
     genres = cursor.fetchall()
     genres_list = []
     for genre in genres:
-        genres_list.append(genre)
+        genres_list.append(genre[0])
     return jsonify(genres_list)
 
-@app.route('/api/v1/genres/<int:genre_id>', methods=['GET'])
-def get_genre_by_id(genre_id:int):
-    cursor = conn.cursor() 
-    cursor.execute(ss.get_genre_by_id, (genre_id,))
-    genre = cursor.fetchone()
-    return jsonify(genre)
+@app.route('/api/v1/films', methods=['GET']) #route avec query parameter
+def get_films_by_genre():
+    genre = request.args.get('genre')
+    if genre == None:
+        return jsonify('Please specify a genre!'), 500
+    cursor = conn.cursor()
+    cursor.execute(ss.get_films_by_genre, (genre,))
+    films = cursor.fetchall()
+    films_titles = []
+    for film in films:
+        films_titles.append(film[0])
+    return jsonify(films_titles)
+
+@app.route('/api/v1/films/month', methods=['GET']) #nombre de films par annnée
+def get_count_films_by_month(): #TODO
+    cursor = conn.cursor()
+    cursor.execute(ss.count_films_by_month)
+    films_month = cursor.fetchall()
+    list_films_month = []
+    for film in films_month:
+        list_films_month.append({'month': film[0], 'number_of_films': film[1]})
+    response = jsonify(list_films_month)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@app.route("/spec")
+def spec():#TODO
+    return jsonify(swagger(app))
 
 #TODO: route films selon l'id du genre
 

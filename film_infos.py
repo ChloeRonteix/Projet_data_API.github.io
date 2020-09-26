@@ -27,13 +27,5 @@ class FilmInfo:
         'note_spec': self.notes[1]
         }
     
-    def toJSON(self):
-        return json.dumps(self, default=self.default_json, sort_keys=True)
-
-    def default_json(self, value):
-        if isinstance(value, date):
-            return dict(year=value.year, month=value.month, day=value.day)
-        else:
-            return value.__dict__
 
     
