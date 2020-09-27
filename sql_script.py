@@ -115,3 +115,10 @@ SELECT extract(month from date)::int, count(*) from films
 group by extract(month from date)
 ORDER by extract(month from date);
 '''
+
+count_films_by_genre = '''
+SELECT g.name, count(f.*) from films f
+JOIN films_genres fg on fg.id_film = f.id
+JOIN genres g on g.id = fg.id_genre
+GROUP BY g.name;
+'''

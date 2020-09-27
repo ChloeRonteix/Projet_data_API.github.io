@@ -117,6 +117,18 @@ def get_count_films_by_month(): #TODO
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
+@app.route('/api/v1/films/genre', methods=['GET']) #nombre de films par annnée
+def get_count_films_by_genre(): #TODO
+    cursor = conn.cursor()
+    cursor.execute(ss.count_films_by_genre)
+    films_genre = cursor.fetchall()
+    list_films_genre = []
+    for film in films_genre:
+        list_films_genre.append({'genre': film[0], 'number_of_films': film[1]})
+    response = jsonify(list_films_genre)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
 @app.route("/spec")
 def spec():#TODO
     return jsonify(swagger(app))
