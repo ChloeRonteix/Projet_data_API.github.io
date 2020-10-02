@@ -11,7 +11,7 @@ import helper
 import uvicorn
 
 app = FastAPI()
-conn_string = "host='allocine.cnlsqrwefkra.eu-west-1.rds.amazonaws.com'" "dbname='postgres'" "user='common'" "password='allocine'"
+conn_string = "host='allocine.cnlsqrwefkra.eu-west-1.rds.amazonaws.com'" "dbname='postgres'" "user='reader'" "password='reader'"
 conn = psycopg2.connect(conn_string)
 print(conn)
 
