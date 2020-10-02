@@ -6,7 +6,6 @@ import sys
 from film_infos import FilmInfo
 from people_infos import PeopleInfo
 import sql_script as ss
-import json
 import helper
 import uvicorn
 

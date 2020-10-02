@@ -1,6 +1,5 @@
 from datetime import date
 from people_infos import PeopleInfo
-import json
 class FilmInfo:
 
     def __init__(self):
