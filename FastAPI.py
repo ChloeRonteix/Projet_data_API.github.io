@@ -1,24 +1,22 @@
-import flask
-from flask import request, jsonify, Flask
+from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 import psycopg2
 import psycopg2.extras
 import sys
 from film_infos import FilmInfo
 from people_infos import PeopleInfo
 import sql_script as ss
-from flask_swagger import swagger
 import json
 import helper
+import uvicorn
 
-
-app = Flask(__name__)
-app.config["DEBUG"] = True
+app = FastAPI()
 conn_string = "host='allocine.cnlsqrwefkra.eu-west-1.rds.amazonaws.com'" "dbname='postgres'" "user='reader'" "password='reader'"
 conn = psycopg2.connect(conn_string)
 print(conn)
 
-@app.route('/api/v1/films/<int:film_id>', methods=['GET'])
-def get_film_by_id(film_id:int):
+@app.get("/api/v2/films/film/{film_id}")
+async def get_film_by_id(film_id:int):
     cursor = conn.cursor()
     cursor.execute(ss.get_film_by_id, (film_id,))
     movie = cursor.fetchone()
@@ -43,36 +41,18 @@ def get_film_by_id(film_id:int):
     for director in directors:
         people = PeopleInfo(director[0],None)
         film.director.append(people)
-    return jsonify(helper.todict(film))
+    return helper.todict(film)
 
-@app.route('/api/v1/people/<int:people_id>', methods=['GET'])
+@app.get("/api/v2/people/{people_id}")
 def get_people_by_id(people_id:int):
     cursor = conn.cursor()
     cursor.execute(ss.get_people_by_id, (people_id,))
     people = cursor.fetchone()
     p = PeopleInfo(people[2],people[1])
     p.id = people[0]
-    return jsonify(helper.todict(p))
+    return helper.todict(p)
 
-@app.route('/api/v1/people/<int:people_id>/filmography', methods=['GET']) #route avec query parameter
-def get_filmography(people_id:int):
-    role = request.args.get('role')
-    if role == None:
-        return jsonify('Please specify a role!'), 500
-    cursor = conn.cursor()
-    if role == 'director':
-        cursor.execute(ss.get_films_by_director, (people_id,))
-    elif role == 'actor':
-        cursor.execute(ss.get_films_by_actor, (people_id,))
-    else:
-        return jsonify('Invalid role! Valid role are: [actor, director]')
-    films = cursor.fetchall()
-    films_titles = []
-    for film in films:
-        films_titles.append([film[0], film[1]])
-    return jsonify(films_titles)
-
-@app.route('/api/v1/genres/all', methods=['GET'])
+@app.get('/api/v2/genres/all')
 def get_all_genres():
     cursor = conn.cursor()
     cursor.execute(ss.get_all_genres)
@@ -80,52 +60,56 @@ def get_all_genres():
     genres_list = []
     for genre in genres:
         genres_list.append(genre[0])
-    return jsonify(genres_list)
+    return genres_list
 
-@app.route('/api/v1/films', methods=['GET']) #route avec query parameter
-def get_films_by_genre():
-    genre = request.args.get('genre')
-    if genre == None:
-        return jsonify('Please specify a genre!'), 500
+@app.get('/api/v2/people/{people_id}/{role}/filmography')
+def get_filmography(people_id:int, role:str):
+    if role == None:
+        return 'Please specify a role!', 500
+    cursor = conn.cursor()
+    if role == 'director':
+        cursor.execute(ss.get_films_by_director, (people_id,))
+    elif role == 'actor':
+        cursor.execute(ss.get_films_by_actor, (people_id,))
+    else:
+        return 'Invalid role! Valid role are: [actor, director]'
+    films = cursor.fetchall()
+    films_titles = []
+    for film in films:
+        films_titles.append([film[0], film[1]])
+    return films_titles
+
+@app.get('/api/v2/genres/genre={genre}')
+def get_films_by_genre(genre:str):
     cursor = conn.cursor()
     cursor.execute(ss.get_films_by_genre, (genre,))
     films = cursor.fetchall()
     films_titles = []
     for film in films:
         films_titles.append(film[0])
-    return jsonify(films_titles)
+    return films_titles
 
-@app.route('/api/v1/films/month', methods=['GET']) #nombre de films par annnée
-def get_count_films_by_month(): #TODO
+@app.get('/api/v2/films/month') #nombre de films par mois
+def get_count_films_by_month(): 
     cursor = conn.cursor()
     cursor.execute(ss.count_films_by_month)
     films_month = cursor.fetchall()
     list_films_month = []
     for film in films_month:
         list_films_month.append({'month': film[0], 'number_of_films': film[1]})
-    response = jsonify(list_films_month)
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
+    headers = {'Access-Control-Allow-Origin':"*"}
+    return JSONResponse(content=list_films_month, headers=headers)
 
-@app.route('/api/v1/films/genre', methods=['GET']) #nombre de films par annnée
-def get_count_films_by_genre(): #TODO
+@app.get('/api/v2/films/genres') #nombre de films par annnée
+def get_count_films_by_genre(): #TODO add 'Access-Control-Allow-Origin'?
     cursor = conn.cursor()
     cursor.execute(ss.count_films_by_genre)
     films_genre = cursor.fetchall()
     list_films_genre = []
     for film in films_genre:
         list_films_genre.append({'genre': film[0], 'number_of_films': film[1]})
-    response = jsonify(list_films_genre)
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
+    headers = {'Access-Control-Allow-Origin':"*"}
+    return JSONResponse(content=list_films_genre, headers=headers)
 
-@app.route("/spec")
-def spec():#TODO
-    return jsonify(swagger(app))
-
-#TODO: route films selon l'id du genre
-
-app.run()
-print("serveur Flask éteint")
-
-
+if __name__ == "__main__":
+  uvicorn.run(app, host="localhost", port=8000)

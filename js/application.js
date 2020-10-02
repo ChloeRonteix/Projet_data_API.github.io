@@ -1,4 +1,5 @@
-const baseUrl = 'http://127.0.0.1:5000/api/v1/';
+const baseUrl = 'http://127.0.0.1:8000/api/v2/';
+//const baseUrl = 'http://127.0.0.1:5000/api/v1/';//
 
 Highcharts.getJSON(baseUrl+'films/month',
     function (data) {
@@ -53,7 +54,7 @@ Highcharts.getJSON(baseUrl+'films/month',
     }
 );
 
-Highcharts.getJSON(baseUrl+'films/genre',
+Highcharts.getJSON(baseUrl+'films/genres',
     function (data) {
         const genre = data.sort((a,b) => b.number_of_films - a.number_of_films).map(d => [d.genre, d.number_of_films]);
 

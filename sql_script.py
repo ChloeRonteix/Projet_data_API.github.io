@@ -83,13 +83,13 @@ SELECT id, provider_id, full_name FROM people WHERE id = %s
 '''
 
 get_films_by_actor = '''
-SELECT f.title FROM films f 
+SELECT f.title, extract( year from f.date)::int FROM films f 
 JOIN films_actors fa ON f.id = fa.id_film 
 WHERE fa.id_actor = %s;
 '''
 
 get_films_by_director = '''
-SELECT f.title, extract( year from f.date) FROM films f 
+SELECT f.title, extract( year from f.date)::int FROM films f 
 JOIN films_directors fa ON f.id = fa.id_film 
 WHERE fa.id_director = %s;
 '''
