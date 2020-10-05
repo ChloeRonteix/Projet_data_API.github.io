@@ -1,4 +1,4 @@
-const baseUrl = 'http://127.0.0.1:8000/api/v2/';
+const baseUrl = 'https://fastapiallocine.herokuapp.com/api/v2/';
 //const baseUrl = 'http://127.0.0.1:5000/api/v1/';//
 
 Highcharts.getJSON(baseUrl+'films/month',
@@ -22,17 +22,15 @@ Highcharts.getJSON(baseUrl+'films/month',
             },
         
             xAxis: {
-                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                title: {
+                    text: "Mois de sortie"
+                }
             },
-        
-            legend: {
-                layout: 'vertical',
-                align: 'right',
-                verticalAlign: 'middle'
-            },
-        
             series: [{
-                data: saisonality
+                name: "Nombre de sortie",
+                data: saisonality,
+                showInLegend: false
             }],
         
             responsive: {
@@ -61,14 +59,15 @@ Highcharts.getJSON(baseUrl+'films/genres',
         Highcharts.chart('graph2', {
             chart: {
                 plotBackgroundColor: null,
-                plotBorderWidth: 0,
-                plotShadow: false
+                plotBorderWidth: null,
+                plotShadow: false,
+                type: 'pie'
             },
             title: {
-                text: 'Distribution des films par genre',
-                align: 'center',
-                verticalAlign: 'middle',
-                y: 300
+                text: 'Distribution des filmes selon leur genre'
+            },
+            subtitle: {
+                text: 'Source: allocine.fr'
             },
             tooltip: {
                 pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -80,27 +79,17 @@ Highcharts.getJSON(baseUrl+'films/genres',
             },
             plotOptions: {
                 pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
                     dataLabels: {
                         enabled: true,
-                        distance: -50,
-                        style: {
-                            fontWeight: 'bold',
-                            color: 'white'
-                        }
-                    },
-                    startAngle: 0,
-                    endAngle: 360,
-                    center: ['50%', '75%'],
-                    size: '100%'
+                        format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                    }
                 }
             },
             series: [{
-                type: 'pie',
-                name: 'genre share',
-                innerSize: '50%',
                 data: genre
-            }]
+                }]
         });
     }
 );
-
