@@ -64,7 +64,7 @@ Highcharts.getJSON(baseUrl+'films/genres',
                 type: 'pie'
             },
             title: {
-                text: 'Distribution des filmes selon leur genre'
+                text: 'Distribution des films selon leur genre'
             },
             subtitle: {
                 text: 'Source: allocine.fr'
