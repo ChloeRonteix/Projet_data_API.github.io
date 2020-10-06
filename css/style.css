@@ -111,9 +111,9 @@ section{
       float:left;
     text-align:center;
   }
-.footer h3{
-      font-family: 'Helvetica';
-      font-size: 30px;
+.footer h4{
+      font-family: Verdana, sans-serif;
+      font-size: 20px;
       font-weight: 100;
       margin-top:70px;
       margin-left:40px;
