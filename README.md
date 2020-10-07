@@ -22,4 +22,17 @@ Les données du site Allociné
 - Mise en page d'une page web hébergée sur Github_pages
 
 # API
-Documentation à venir
+https://fastapiallocine.herokuapp.com/docs
+
+# Base de données
+![alt text](https://github.com/ChloeRonteix/Projet_data_API.github.io/blob/master/schema_db.png?raw=true)
+
+# Problèmes rencontrés
+- Présence de doublons dans la table "people" dû au scrapping, qui s'est répercuté sur la table de jointure "films_actors"
+
+# Poursuite du projet dans le futur
+- Nettoyage des doublons fait!
+- Adapter l'envoi vers la base de données pour éviter d'insérer de nouveaux doublons (ajouter une vérification d'existence au niveau des noms si provider_id inexistant)
+- Après nettoyage et adaptation, scrapper plus de pages
+- Réflexion autour d'un modèle de prédiction des notes des films (en fonction des acteurs, réalisateurs, genre?)
+- Ajout d'une interface de recherche sur le site internet pour naviguer dans la base de données?
