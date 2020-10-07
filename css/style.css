@@ -45,7 +45,7 @@ section{
 .footer #button{
       width:35px;
       height:35px;
-      border: #095d77 12px solid;
+      border: rgba(0,0,0,.9) 12px solid;
       border-radius:35px;
       margin:0 auto;
       position:relative;
@@ -54,17 +54,19 @@ section{
       -o-transition: all 1s ease;
       -ms-transition: all 1s ease;
       transition: all 1s ease;
+      opacity: 0.5;
   }
 .footer #button:hover{
       width:35px;
       height:35px;
-      border: #095d77 12px solid;
+      border: rgba(0,0,0,.9) 12px solid;
       -webkit-transition: all 1s ease;
       -moz-transition: all 1s ease;
       -o-transition: all 1s ease;
       -ms-transition: all 1s ease;
       transition: all 1s ease;
       position:relative;
+      opacity: 0.5;
   }
 .footer {
       bottom:0;
@@ -96,7 +98,7 @@ section{
     position:relative;
     top:0;
     left:0;
-      background: #21bff0;
+      background: #f8f9fa;
   }
 .footer #cont{
     position:relative;
