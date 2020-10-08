@@ -3,7 +3,7 @@ import bs4
 import time
 import pandas as pd
 from film_infos import FilmInfo
-from datetime import date
+from datetime import date, datetime
 from people_infos import PeopleInfo
 import psycopg2
 from postgres_functions import PostgresFilmsRepository
@@ -18,7 +18,7 @@ pf = PostgresFilmsRepository()
 def start_scrap():
     #df = pd.DataFrame(columns=('title', 'id', 'actors', 'directors', 'date', 'genres', 'synopsis', 'notes_presse','note_spec'))
     last_scraped_page = pf.get_last_page()
-    for i in range(last_scraped_page+1, last_scraped_page+11):
+    for i in range(last_scraped_page+1, last_scraped_page+2):
         boxes = get_films_box(i)
         for box in boxes:
             film = get_filmInfos(box)
@@ -34,8 +34,8 @@ def start_scrap():
     #print(df['genres'])
 
 
-def add_to_df(film: FilmInfo, data):
-    return data.append(film.to_dictionary(), ignore_index=True)
+# def add_to_df(film: FilmInfo, data):
+#     return data.append(film.to_dictionary(), ignore_index=True)
 
 def add_to_postgres(film: FilmInfo): 
     film_id = pf.add_film_to_postgres(film)
@@ -89,7 +89,7 @@ def get_styles(film):
         genres.append(genre.text)
     return genres
 
-def get_date(film): #TODO: convert date
+def get_date(film):
     months = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre']
     date_div = film.find('span', {'class':'date'})
     if date_div == None:
@@ -97,12 +97,15 @@ def get_date(film): #TODO: convert date
     date_part = date_div.text.split()
     if len(date_part) == 1:
         film_date = date(int(date_part[0]), 1, 1)
+    elif len(date_part) == 2:
+        month_id = months.index(date_part[0])+1
+        film_date = date(int(date_part[1]), month_id, 1)
     else:
         month_id = months.index(date_part[1])+1
         film_date = date(int(date_part[2]), month_id, int(date_part[0]))
-    return film_date # Voir dateparser.parse(date_string).date()
+    return film_date
 
-def get_real(film): #TODO: get id provider
+def get_real(film):
     real = film.find_all("a", {"class":"blue-link"})
     realisateurs = []
     for realisateur in real:
@@ -154,8 +157,14 @@ def get_filmInfos(box) -> FilmInfo:
 
 
 #DEBUT SCRAPING
+start_time = datetime.now()
+print(f"début du scrapping: {start_time}")
 start_scrap()
 
 #FIN SCRAPING
+end_time = datetime.now()
+difference = end_time-start_time
+print(f"fin du scrapping: {end_time}")
+print(f"durée du scrapping: {difference}")
 print("FINI")
 

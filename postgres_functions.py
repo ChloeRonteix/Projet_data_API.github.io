@@ -55,7 +55,7 @@ class PostgresFilmsRepository:
     def add_actor_to_postgres(self, actors:list, film_id:int):
         c = self.conn.cursor()
         for a in actors:
-            c.execute(ss.get_people_id_by_name_and_provider_id, (a.full_name, a.provider_id))
+            c.execute(ss.get_people_by_name, (a.full_name,))
             fetched = c.fetchone()
             if fetched == None:
                 try:
@@ -66,6 +66,8 @@ class PostgresFilmsRepository:
                 self.conn.commit()
             else:
                 actor_id = fetched[0]
+                if fetched[1] == None and a.provider_id != None:
+                    c.execute(ss.update_provider_id, (a.provider_id,actor_id))
             try:
                 c.execute(ss.insert_actor_for_film, (film_id, actor_id))
             except Exception as e:
@@ -75,7 +77,7 @@ class PostgresFilmsRepository:
     def add_director_to_postgres(self, realisateurs:list, film_id:int):
         c = self.conn.cursor()
         for r in realisateurs:
-            c.execute(ss.get_people_id_by_name_and_provider_id, (r.full_name, r.provider_id))
+            c.execute(ss.get_people_by_name, (r.full_name,))
             fetched = c.fetchone()
             if fetched == None:
                 try:
@@ -86,6 +88,8 @@ class PostgresFilmsRepository:
                 self.conn.commit()
             else:
                 director_id = fetched[0]
+                if fetched[1] == None and r.provider_id != None:
+                    c.execute(ss.update_provider_id, (r.provider_id,director_id))
             try:
                 c.execute(ss.insert_director_for_film, (film_id, director_id))
             except Exception as e:

@@ -48,11 +48,23 @@ INSERT INTO films_directors (id_film, id_director)
 VALUES (%s, %s);
 '''
 
+update_provider_id = '''
+UPDATE people
+SET provider_id = %s
+WHERE id = %s
+'''
+
 get_people_id_by_name_and_provider_id = '''
 SELECT id 
 FROM people
 WHERE full_name = %s
 AND COALESCE(provider_id,0) = COALESCE(%s,0);
+'''
+
+get_people_by_name = '''
+SELECT id, provider_id, full_name
+FROM people
+WHERE full_name = %s
 '''
 
 get_film_by_id = '''
