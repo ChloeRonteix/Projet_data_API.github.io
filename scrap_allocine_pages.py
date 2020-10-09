@@ -18,7 +18,7 @@ pf = PostgresFilmsRepository()
 def start_scrap():
     #df = pd.DataFrame(columns=('title', 'id', 'actors', 'directors', 'date', 'genres', 'synopsis', 'notes_presse','note_spec'))
     last_scraped_page = pf.get_last_page()
-    for i in range(last_scraped_page+1, last_scraped_page+2):
+    for i in range(last_scraped_page+1, last_scraped_page+3001):
         boxes = get_films_box(i)
         for box in boxes:
             film = get_filmInfos(box)
@@ -27,7 +27,7 @@ def start_scrap():
         print(f'Page {i} scrapped!')
         pf.save_page(i)
         print(f'Page {i} saved!')
-        time.sleep(1)
+        #time.sleep(1)
     #print(df)
     #print(df['date'])
     #print(df['directors'])
@@ -164,6 +164,7 @@ start_scrap()
 #FIN SCRAPING
 end_time = datetime.now()
 difference = end_time-start_time
+print(f"début du scrapping: {start_time}")
 print(f"fin du scrapping: {end_time}")
 print(f"durée du scrapping: {difference}")
 print("FINI")
